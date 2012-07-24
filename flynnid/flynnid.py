@@ -9,7 +9,7 @@ import json
 import urllib2
 
 def main ():
-    parser = OptionParser(version='%prog 0.1')
+    parser = OptionParser(version='%prog 0.2')
     parser.set_defaults(verbose=False)
     parser.add_option('-v', '--verbose',
                       action='store_true',
