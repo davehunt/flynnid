@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name = 'FlynnID',
     version = '0.1',
-    description='Registers a single Selenium node to Selenium Grid hub.',
+    description='Registers Selenium nodes to a Selenium Grid hub.',
     author = 'Dave Hunt',
     author_email = 'dhunt@mozilla.com',
     url = 'https://github.com/davehunt/flynnid',
