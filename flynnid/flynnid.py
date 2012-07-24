@@ -6,7 +6,6 @@
 
 from optparse import OptionParser
 import json
-import urllib
 import urllib2
 
 def main ():
