@@ -17,89 +17,112 @@ def main ():
     parser.add_option('--hubhost',
                       action='store',
                       type='string',
-                      metavar='STR',
+                      metavar='str',
                       dest='hub_host',
                       default='localhost',
                       help='host selenium grid is listening on [default: %default]')
     parser.add_option('--hubport',
                       action='store',
                       type='int',
-                      metavar='NUM',
+                      metavar='num',
                       dest='hub_port',
                       default=4444,
                       help='port selenium grid is listening on [default: %default]')
+    parser.add_option('--nodeconfig',
+                      action='store',
+                      type='string',
+                      metavar='path',
+                      dest='node_config',
+                      help='configuration file for nodes to register.')
     parser.add_option('--nodehost',
                       action='store',
                       type='string',
-                      metavar='STR',
+                      metavar='str',
                       dest='node_host',
                       default='localhost',
                       help='host selenium node is listening on [default: %default]')
     parser.add_option('--nodeport',
                       action='store',
                       type='int',
-                      metavar='NUM',
+                      metavar='num',
                       dest='node_port',
                       default=5555,
                       help='port selenium node is listening on [default: %default]')
     parser.add_option('--browsername',
                       action='store',
                       type='str',
-                      metavar='STR',
+                      metavar='str',
                       dest='browser_name',
                       help='name of browser available on node')
     parser.add_option('--browserver',
                       action='store',
                       type='str',
-                      metavar='STR',
+                      metavar='str',
                       dest='browser_version',
                       help='version of browser available on node')
     parser.add_option('--platform',
                       action='store',
                       type='str',
-                      metavar='STR',
+                      metavar='str',
                       help='platform of node')
     (options, args) = parser.parse_args()
     
     url = 'http://%s:%i/grid/register' % (options.hub_host, options.hub_port)
-    data = {
-        'class': 'org.openqa.grid.common.RegistrationRequest',
-        'capabilities': [{
-            'seleniumProtocol': 'WebDriver',
-            'browserName': options.browser_name,
-            'version': options.browser_version,
-            'platform': options.platform,
-            'maxInstances': 1}],
-        'configuration': {
-            'port': options.node_port,
-            'host': options.node_host,
-            'proxy': 'org.openqa.grid.selenium.proxy.DefaultRemoteProxy',
-            'register': True,
-            'registerCycle': 5000,
-            'hubHost': options.hub_host,
-            'hub': 'http://%s:%i/grid/register' % (options.hub_host, options.hub_port),
-            'url': 'http://%s:%i' % (options.node_host, options.node_port),
-            'remoteHost': 'http://%s:%i' % (options.node_host, options.node_port),
-            'maxSession': 1,
-            'role': 'node',
-            'hubPort': options.hub_port}}
-    data = json.dumps(data)
-    if options.verbose:
-        print 'Using JSON request: %s' % data
 
-    print 'Registering the node to hub: %s' % url
-    request = urllib2.Request(url, data)
-    try:
-        response = urllib2.urlopen(request)
-        print 'Success!'
-    except IOError, e:
-        if hasattr(e, 'reason'):
-            print 'Unable to connect to Selenium Grid hub! Is it running?'
-            print 'Reason: %s' % e.reason
-        elif hasattr(e, 'code'):
-            print 'Registration to Selenium Grid hub failed!'
-            print 'URL: %s' % e.geturl()
-            print 'Error code: %s' % e.code
+    nodes = []
+    if options.node_config:
+        f = open(options.node_config)
+        nodes.extend(json.load(f))
+    else:
+        nodes.append({
+            'host':options.node_host,
+            'port':options.node_port,
+            'browser':{
+                'name':options.browser_name,
+                'version':options.browser_version
+            },
+            'platform':options.platform
+        })
+
+    for node in nodes:
+        data = {
+            'class': 'org.openqa.grid.common.RegistrationRequest',
+            'capabilities': [{
+                'seleniumProtocol': 'WebDriver',
+                'browserName': node['browser']['name'],
+                'version': node['browser']['version'],
+                'platform': node['platform'],
+                'maxInstances': 1}],
+            'configuration': {
+                'port': node['port'],
+                'host': node['host'],
+                'proxy': 'org.openqa.grid.selenium.proxy.DefaultRemoteProxy',
+                'register': True,
+                'registerCycle': 5000,
+                'hubHost': options.hub_host,
+                'hub': 'http://%s:%i/grid/register' % (options.hub_host, options.hub_port),
+                'url': 'http://%s:%i' % (node['host'], node['port']),
+                'remoteHost': 'http://%s:%i' % (node['host'], node['port']),
+                'maxSession': 1,
+                'role': 'node',
+                'hubPort': options.hub_port}}
+        data = json.dumps(data)
+        if options.verbose:
+            print 'Using JSON request: %s' % data
+
+        print 'Registering node to hub: %s' % url
+        request = urllib2.Request(url, data)
+        try:
+            urllib2.urlopen(request)
+            print 'Success!'
+        except IOError, e:
+            if hasattr(e, 'reason'):
+                print 'Unable to connect to Selenium Grid hub! Is it running?'
+                print 'Reason: %s' % e.reason
+            elif hasattr(e, 'code'):
+                print 'Registration to Selenium Grid hub failed!'
+                print 'URL: %s' % e.geturl()
+                print 'Error code: %s' % e.code
 
 
 if __name__ == '__main__':
