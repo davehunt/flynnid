@@ -74,6 +74,12 @@ def main ():
         f = open(options.node_config)
         nodes.extend(json.load(f))
     else:
+        if not options.browser_name:
+            raise Exception('--browsername must be specified!')
+        if not options.browser_version:
+            raise Exception('--browserver must be specified!')
+        if not options.platform:
+            raise Exception('--platform must be specified!')
         nodes.append({
             'host':options.node_host,
             'port':options.node_port,
