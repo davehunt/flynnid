@@ -17,6 +17,8 @@ From source:
 Running FlynnID
 ---------------
 
+FlynnID requires a configuration file in JSON format to be specified on the command line.
+
 For full usage details run the following command:
 
     $ flynnid --help
@@ -24,16 +26,31 @@ For full usage details run the following command:
     --version           show program's version number and exit
     -h, --help          show this help message and exit
     -v, --verbose       increase verbosity
-    --hubhost=STR       host selenium grid is listening on [default: localhost]
-    --hubport=NUM       port selenium grid is listening on [default: 4444]
-    --nodehost=STR      host selenium node is listening on [default: localhost]
-    --nodeport=NUM      port selenium node is listening on [default: 5555]
-    --browsername=STR   name of browser available on node
-    --browserver=STR    version of browser available on node
-    --platform=STR      platform of node
 
-### Example
+### Example configuration
 
-Register an AndroidDriver node:
+The following would register two AndroidDriver nodes on a local Selenium Grid hub:
 
-    $ flynnid --nodeport=8080 --browsername=android --browserver=2.3.3 --platform=ANDROID
+    {
+        "hub": {
+            "host": "localhost",
+            "port": 4444
+        },
+        "nodes": [{
+            "host": "10.250.10.10",
+            "port": 8080,
+            "browser": {
+                "name": "android",
+                "version": "4"
+            },
+            "platform": "ANDROID"
+        },{
+            "host": "10.250.10.11",
+            "port": 8080,
+            "browser": {
+                "name": "android",
+                "version": "4"
+            },
+            "platform": "ANDROID"
+        }]
+    }
