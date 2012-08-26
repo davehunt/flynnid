@@ -60,12 +60,18 @@ def main ():
         if options.verbose:
             print 'Using JSON request: %s' % data
 
-        print 'Registering node to hub: %s' % url
+        status = 'Registering %s:%s to %s:%s' % (
+            node_host,
+            node_port,
+            hub_host,
+            hub_port)
+        print status,
         request = urllib2.Request(url, data)
         try:
             urllib2.urlopen(request)
-            print 'Success!'
+            print '\r%s [\033[92mSUCCESS\033[0m]' % status
         except IOError, e:
+            print '\r%s [\033[91mFAIL\033[0m]' % status
             if hasattr(e, 'reason'):
                 print 'Unable to connect to Selenium Grid hub! Is it running?'
                 print 'Reason: %s' % e.reason
