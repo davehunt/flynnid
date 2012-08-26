@@ -17,6 +17,9 @@ def main ():
     parser.add_option('-v', '--verbose',
                       action='store_true',
                       help='increase verbosity')
+    parser.add_option('--force',
+                      action='store_true',
+                      help='force registration of nodes')
     (options, args) = parser.parse_args()
 
     if len(args) < 1:
@@ -30,9 +33,8 @@ def main ():
     hub_host = config['hub']['host']
     hub_port = config['hub']['port']
 
-    url = 'http://%s:%i/grid/register' % (hub_host, hub_port)
-
     for node in config['nodes']:
+        node_id = node.get('id', 'http://%s:%s' % (node['host'], node['port']))
         node_host = node['host']
         node_port = node['port']
         data = {
@@ -66,19 +68,31 @@ def main ():
             hub_host,
             hub_port)
         print status,
-        request = urllib2.Request(url, data)
+
+        proxy_registered = False
         try:
-            urllib2.urlopen(request)
-            print '\r%s [\033[92mSUCCESS\033[0m]' % status
+            url = 'http://%s:%i/grid/api/proxy?id=%s' % (hub_host, hub_port, node_id)
+            response = json.load(urllib2.urlopen(urllib2.Request(url)))
+            proxy_registered = response.get('success', False)
         except IOError, e:
-            print '\r%s [\033[91mFAIL\033[0m]' % status
-            if hasattr(e, 'reason'):
-                print 'Unable to connect to Selenium Grid hub! Is it running?'
-                print 'Reason: %s' % e.reason
-            elif hasattr(e, 'code'):
-                print 'Registration to Selenium Grid hub failed!'
-                print 'URL: %s' % e.geturl()
-                print 'Error code: %s' % e.code
+            print '\r%s [\033[91mFAILED\033[0m]' % status
+            if options.verbose:
+                print e
+            continue
+
+        if proxy_registered and not options.force:
+            print '\r%s [\033[93mSKIPPED\033[0m]' % status
+            if options.verbose:
+                print 'Node is already registered.'
+        else:
+            try:
+                register_url = 'http://%s:%i/grid/register' % (hub_host, hub_port)
+                urllib2.urlopen(urllib2.Request(register_url, data))
+                print '\r%s [\033[92mSUCCESS\033[0m]' % status
+            except IOError, e:
+                print '\r%s [\033[91mFAILED\033[0m]' % status
+                if options.verbose:
+                    print e
 
 
 if __name__ == '__main__':

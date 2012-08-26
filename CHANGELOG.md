@@ -5,6 +5,8 @@ Change Log
 ---
 
  * Improved console output
+ * Skip registering nodes that are already registered
+ * Allow forcing of nodes that are already registered
 
 0.2
 ---

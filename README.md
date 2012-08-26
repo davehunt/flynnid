@@ -1,7 +1,7 @@
 FlynnID
 =======
 
-FlynnID registers a Selenium node to a running Selenium Grid hub.
+FlynnID registers Selenium nodes to a running Selenium Grid hub.
 
 Installation
 ------------
@@ -26,6 +26,7 @@ For full usage details run the following command:
     --version           show program's version number and exit
     -h, --help          show this help message and exit
     -v, --verbose       increase verbosity
+    --force             force registration of nodes
 
 ### Example configuration
 
