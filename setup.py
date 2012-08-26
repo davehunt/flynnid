@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name = 'FlynnID',
-    version = '0.2',
+    version = '0.3',
     description='Registers Selenium nodes to a Selenium Grid hub.',
     author = 'Dave Hunt',
     author_email = 'dhunt@mozilla.com',

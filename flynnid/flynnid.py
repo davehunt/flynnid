@@ -12,7 +12,7 @@ import urllib2
 
 def main ():
     usage = "Usage: %prog [options] config"
-    parser = OptionParser(usage=usage, version='%prog 0.2')
+    parser = OptionParser(usage=usage, version='%prog 0.3')
     parser.set_defaults(verbose=False)
     parser.add_option('-v', '--verbose',
                       action='store_true',

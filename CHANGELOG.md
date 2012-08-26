@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+0.3
+---
+
+ * Improved console output
+
 0.2
 ---
 
