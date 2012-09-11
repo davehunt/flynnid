@@ -14,6 +14,9 @@ from termcolor import colored
 
 
 def main ():
+    from colorama import init
+    init()
+
     usage = "Usage: %prog config [options]"
     parser = OptionParser(usage=usage, version='%prog 0.3')
     parser.set_defaults(verbose=False)
