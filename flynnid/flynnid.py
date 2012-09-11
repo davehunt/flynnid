@@ -10,6 +10,9 @@ import os
 import sys
 import urllib2
 
+from termcolor import colored
+
+
 def main ():
     usage = "Usage: %prog config [options]"
     parser = OptionParser(usage=usage, version='%prog 0.3')
@@ -137,22 +140,22 @@ def main ():
             response = json.load(urllib2.urlopen(urllib2.Request(url)))
             proxy_registered = response.get('success', False)
         except IOError, e:
-            print '\r%s [\033[91mFAILED\033[0m]' % status
+            print '\r%s [%s]' % (status, colored('FAILED', 'red'))
             if options.verbose:
                 print e
             continue
 
         if proxy_registered and not options.force:
-            print '\r%s [\033[93mSKIPPED\033[0m]' % status
+            print '\r%s [%s]' % (status, colored('SKIPPED', 'yellow'))
             if options.verbose:
                 print 'Node is already registered.'
         else:
             try:
                 register_url = 'http://%s:%i/grid/register' % (hub_host, hub_port)
                 urllib2.urlopen(urllib2.Request(register_url, data))
-                print '\r%s [\033[92mSUCCESS\033[0m]' % status
+                print '\r%s [%s]' % (status, colored('SUCCESS', 'green'))
             except IOError, e:
-                print '\r%s [\033[91mFAILED\033[0m]' % status
+                print '\r%s [%s]' % (status, colored('FAILED', 'red'))
                 if options.verbose:
                     print e
 

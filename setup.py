@@ -7,6 +7,7 @@ setup(
     author = 'Dave Hunt',
     author_email = 'dhunt@mozilla.com',
     url = 'https://github.com/davehunt/flynnid',
+    install_requires=['termcolor'],
     packages = ['flynnid'],
     classifiers = [
         'Development Status :: 4 - Beta',
