@@ -11,7 +11,7 @@ import sys
 import urllib2
 
 def main ():
-    usage = "Usage: %prog [options] config"
+    usage = "Usage: %prog config [options]"
     parser = OptionParser(usage=usage, version='%prog 0.3')
     parser.set_defaults(verbose=False)
     parser.add_option('-v', '--verbose',
@@ -19,16 +19,78 @@ def main ():
                       help='increase verbosity')
     parser.add_option('--force',
                       action='store_true',
-                      help='force registration of nodes')
+                      help='force registration of node(s)')
+    parser.add_option('--hubhost',
+                      action='store',
+                      type='string',
+                      metavar='str',
+                      dest='hub_host',
+                      default='localhost',
+                      help='host selenium grid is listening on [default: %default]')
+    parser.add_option('--hubport',
+                      action='store',
+                      type='int',
+                      metavar='num',
+                      dest='hub_port',
+                      default=4444,
+                      help='port selenium grid is listening on [default: %default]')
+    parser.add_option('--nodeconfig',
+                      action='store',
+                      type='string',
+                      metavar='path',
+                      dest='node_config',
+                      help='configuration file for nodes to register.')
+    parser.add_option('--nodehost',
+                      action='store',
+                      type='string',
+                      metavar='str',
+                      dest='node_host',
+                      default='localhost',
+                      help='host selenium node is listening on [default: %default]')
+    parser.add_option('--nodeport',
+                      action='store',
+                      type='int',
+                      metavar='num',
+                      dest='node_port',
+                      default=5555,
+                      help='port selenium node is listening on [default: %default]')
+    parser.add_option('--browsername',
+                      action='store',
+                      type='str',
+                      metavar='str',
+                      dest='browser_name',
+                      help='name of browser available on node')
+    parser.add_option('--browserver',
+                      action='store',
+                      type='str',
+                      metavar='str',
+                      dest='browser_version',
+                      help='version of browser available on node')
+    parser.add_option('--platform',
+                      action='store',
+                      type='str',
+                      metavar='str',
+                      help='platform of node')
     (options, args) = parser.parse_args()
 
-    if len(args) < 1:
-        sys.exit('ERROR: Configuration file not specified!')
+    if len(args) == 1:
 
-    if not os.path.exists(args[0]):
-        sys.exit('ERROR: Configuration file %s not found!' % args[0])
+        if not os.path.exists(args[0]):
+            sys.exit('ERROR: Configuration file %s not found!' % args[0])
 
-    config = json.load(open(args[0]))
+        config = json.load(open(args[0]))
+    else:
+        config = {
+            "hub":{
+                "host":options.hub_host,
+                "port":options.hub_port},
+            "nodes":[{
+                "host":options.node_host,
+                "port":options.node_port,
+                "browser": {
+                    "name":options.browser_name,
+                    "version":options.browser_version},
+                "platform":options.platform}]}
 
     hub_host = config['hub']['host']
     hub_port = config['hub']['port']

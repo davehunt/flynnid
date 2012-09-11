@@ -7,6 +7,7 @@ Change Log
  * Improved console output
  * Skip registering nodes that are already registered
  * Allow forcing of nodes that are already registered
+ * Reintroduced support for configuring a single node via the command line
 
 0.2
 ---
